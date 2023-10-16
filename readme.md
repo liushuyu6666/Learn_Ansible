@@ -6,6 +6,8 @@
   - [Verifying the SSH Connection:](#verifying-the-ssh-connection)
   - [Configuring `~/.ssh/authorized_keys` on Raspberry Pi](#configuring-sshauthorized_keys-on-raspberry-pi)
   - [Completing SSH Public-Key Authentication](#completing-ssh-public-key-authentication)
+- [Projects](#projects)
+  - [Project 1](#project-1)
 - [Troubleshooting](#troubleshooting)
   - [SSH connection](#ssh-connection)
 
@@ -65,6 +67,18 @@ For a streamlined Raspberry Pi environment setup, follow the provided [Raspberry
    2. Confirm that the public key is added to the `~/.ssh/authorized_keys` on the Raspberry Pi. This should be completed in step 4.
 
 By following these steps and recording the IP addresses of your Raspberry Pis, you'll have a functional Ansible environment for learning and practical exercises in this project.
+
+# Projects
+## Project 1
+Keywords:
+1. install
+2. uninstall (remove, purge, autoremove)
+3. email sending
+4. apache2
+5. rabbitmq-server
+6. postgresql
+7. space check
+
 
 # Troubleshooting
 ## SSH connection

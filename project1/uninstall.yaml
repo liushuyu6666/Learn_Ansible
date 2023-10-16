@@ -1,0 +1,83 @@
+---
+- name: Uninstall all services
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+
+    # Host 1 httpd
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: action == 'uninstall' and inventory_hostname == 'host1'
+    - name: Check if httpd is installed
+      command: sh -c 'dpkg -l | grep apache2'
+      register: httpd_status
+      ignore_errors: yes
+      changed_when: false
+      no_log: true
+      when: action == 'uninstall' and inventory_hostname == 'host1'
+    - name: Stop httpd service if present
+      service:
+        name: apache2
+        state: stopped
+      when: action == 'uninstall' and inventory_hostname == 'host1' and httpd_status.rc == 0
+    - name: Remove httpd if present, includes residual configuration files and dependencies
+      apt:
+        name: apache2
+        state: absent
+        purge: true
+        autoremove: true
+      when: action == 'uninstall' and inventory_hostname == 'host1' and httpd_status.rc == 0
+
+    # Host 2 rabbitmq-server
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: action == 'uninstall' and inventory_hostname == 'host2'
+    - name: Check if rabbitmq-server is installed
+      command: sh -c 'dpkg -l | grep rabbitmq-server'
+      register: rabbitmq_status
+      ignore_errors: yes
+      changed_when: false
+      no_log: true
+      when: action == 'uninstall' and inventory_hostname == 'host2'
+    - name: Stop rabbitmq-server service if present
+      service:
+        name: rabbitmq-server
+        state: stopped
+      when: action == 'uninstall' and inventory_hostname == 'host2' and rabbitmq_status.rc == 0
+    - name: Remove rabbitmq_server if present, includes residual configuration files and dependencies
+      apt:
+        name: rabbitmq-server
+        state: absent
+        purge: true
+        autoremove: true
+      when: action == 'uninstall' and inventory_hostname == 'host2' and rabbitmq_status.rc == 0
+
+    # Host 3 postgresql
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: action == 'uninstall' and inventory_hostname == 'host3'
+    - name: Check if postgresql is installed
+      command: sh -c 'dpkg -l | grep postgresql'
+      register: postgresql_status
+      ignore_errors: yes
+      changed_when: false
+      no_log: true
+      when: action == 'uninstall' and inventory_hostname == 'host3'
+    - name: Stop postgresql service if present
+      service:
+        name: postgresql
+        state: stopped
+      when: action == 'uninstall' and inventory_hostname == 'host3' and postgresql_status.rc == 0
+    - name: Remove postgresql if present, includes residual configuration files and dependencies
+      apt:
+        name: 
+          - postgresql
+          - postgresql-*
+        state: absent
+        purge: true
+        autoremove: true
+      when: action == 'uninstall' and inventory_hostname == 'host3' and postgresql_status.rc == 0

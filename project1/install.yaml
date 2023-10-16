@@ -1,0 +1,83 @@
+---
+# Action 1: verify_install
+- name: Ensure services are installed
+  hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+
+    # Host 1 httpd
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: action == 'verify-install' and inventory_hostname == 'host1'
+    - name: Install httpd if not present
+      apt:
+        name: apache2
+        state: present
+      when: action == 'verify-install' and inventory_hostname == 'host1'
+    - name: Start httpd service
+      service:
+        name: apache2
+        state: started
+      when: action == 'verify-install' and inventory_hostname == 'host1'
+
+    # Host 2 rabbitmq-server
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: action == 'verify-install' and inventory_hostname == 'host2'
+    - name: Install rabbitmq-server if not present
+      apt:
+        name: rabbitmq-server
+        state: present
+      when: action == 'verify-install' and inventory_hostname == 'host2'
+    - name: Start rabbitmq-server service
+      service:
+        name: rabbitmq-server
+        state: started
+      when: action == 'verify-install' and inventory_hostname == 'host2'
+
+    # Host 3 postgresql
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: action == 'verify-install' and inventory_hostname == 'host3'
+    - name: Install postgresql if not present
+      apt:
+        name: postgresql
+        state: present
+      when: action == 'verify-install' and inventory_hostname == 'host3'
+    - name: Start postgresql service
+      service:
+        name: postgresql
+        state: started
+      when: action == 'verify-install' and inventory_hostname == 'host3'
+
+# Action 2: check-disk
+- name: Service and System Checks based on action variable
+  hosts: all
+  vars:
+    email_recipient: "liushuyu6666@gmail.com"
+  tasks:
+
+    - name: Include configurations from config.yaml
+      include_vars:
+        file: config.yaml
+        name: configs
+    - name: Check disk usage
+      shell: df -h | awk '$5+0 > 10 {print $0 }'
+      register: disk_check
+      failed_when: false
+      when: action == 'check-disk'
+    - name: Send email alert for high disk usage
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: "{{ email_recipient }}"
+        password: "{{ configs.email_code }}"
+        subject: "Alert: High Disk Usage"
+        from: "{{ email_recipient }}"
+        to: "{{ email_recipient }}"
+        body: "High disk usage detected on {{ ansible_hostname }}: {{ disk_check.stdout }}"
+      when: action == 'check-disk' and disk_check.stdout|length > 0
